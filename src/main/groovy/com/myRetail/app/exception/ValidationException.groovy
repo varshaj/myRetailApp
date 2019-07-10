@@ -1,13 +1,14 @@
 package com.myRetail.app.exception
 
 import groovy.transform.CompileStatic
+import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 
 @CompileStatic
-class InvalidPriceUpdateException extends GenericException {
+class ValidationException extends ApplicationException {
 
-    InvalidPriceUpdateException(BindingResult bindingResults) {
-        errorCode = "INVALID_PRICE_UPDATE"
-        params = [bindingResults?.fieldErrors?.first()?.field, bindingResults?.fieldErrors?.first()?.defaultMessage] as String[]
+    ValidationException(String message, BindingResult bindingResults) {
+        super(message,  ErrorCodes.VALIDATION_FAILURE_ERROR_CODE,
+                [bindingResults?.fieldErrors?.first()?.field, bindingResults?.fieldErrors?.first()?.defaultMessage] as String[])
     }
 }

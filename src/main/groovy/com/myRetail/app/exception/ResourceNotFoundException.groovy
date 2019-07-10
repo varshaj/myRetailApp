@@ -1,17 +1,16 @@
 package com.myRetail.app.exception
 
 import groovy.transform.CompileStatic
+import org.springframework.http.HttpStatus
 
 @CompileStatic
-class ResourceNotFoundException extends GenericException {
+class ResourceNotFoundException extends ApplicationException {
 
-    ResourceNotFoundException(Long productId) {
-        errorCode = "PRODUCT_NOT_FOUND"
-        params = [productId] as String[]
+    ResourceNotFoundException(String message) {
+        super(message, ErrorCodes.PRODUCT_NOT_FOUND_CODE, [ErrorCodes.PRODUCT_NOT_FOUND_DESCRIPTION])
     }
 
     ResourceNotFoundException() {
-        errorCode = "PRODUCT_NOT_FOUND"
-        params = null
+        super('No resource found', ErrorCodes.PRODUCT_NOT_FOUND_CODE, [ErrorCodes.PRODUCT_NOT_FOUND_DESCRIPTION])
     }
 }

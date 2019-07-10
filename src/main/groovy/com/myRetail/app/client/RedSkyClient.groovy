@@ -27,8 +27,9 @@ class RedSkyClient {
             Map response = restTemplate.getForObject(redSkyUrl, Map.class, [id: productId])
             return response?.product?.item?.product_description?.title
         } catch (RestClientException e) {
-            log.info("Exception occurred while accessing the redSkyService : " + redSkyUrl + " for productId : " + productId)
-            throw new ResourceNotFoundException(productId)
+            String logMessage = "Exception occurred while accessing the redSkyService : " + redSkyUrl + " for productId : " + productId
+            log.info(logMessage)
+            throw new ResourceNotFoundException(logMessage)
         }
     }
 

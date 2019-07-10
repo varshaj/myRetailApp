@@ -3,7 +3,7 @@ package com.myRetail.app.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.myRetail.app.domain.CurrentPrice
 import com.myRetail.app.domain.Product
-import com.myRetail.app.exception.InvalidPriceUpdateException
+import com.myRetail.app.exception.ValidationException
 import com.myRetail.app.exception.PreconditionFailedException
 import com.myRetail.app.service.ProductInfoService
 import com.myRetail.app.service.ProductPriceService
@@ -46,7 +46,7 @@ class ProductInfoController {
 
     @ApiOperation(value = "Get product details by productId", response = Product.class, tags = ["Get Product Information"])
     @GetMapping(value = ['{productId}'], produces = MediaType.APPLICATION_JSON_VALUE)
-    Product getProduct(@PathVariable(value="productId") Long productId) {
+    Product getProductDetails(@PathVariable(value="productId") Long productId) {
         new Product(id: productId, name: redSkyService.getProductName(productId),
                 current_price: productPriceService.getProductPrice(productId) as CurrentPrice)
     }
@@ -72,11 +72,11 @@ class ProductInfoController {
         return updatedProductDetails
     }
 
-    static void validateRequest(BindingResult bindingResults, Long productId, Product priceUpdateRequest) {
+    void validateRequest(BindingResult bindingResults, Long productId, Product priceUpdateRequest) {
         if (bindingResults.hasErrors()) {
-            throw new InvalidPriceUpdateException(bindingResults)
+            throw new ValidationException('Invalid priceUpdate request', bindingResults)
         } else if (productId != priceUpdateRequest.id) {
-            throw new PreconditionFailedException(priceUpdateRequest.id)
+            throw new PreconditionFailedException(priceUpdateRequest.id as String)
         }
     }
 }

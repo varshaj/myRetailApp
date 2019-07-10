@@ -6,5 +6,5 @@ import groovy.transform.CompileStatic
 class ErrorResponse {
 
     String errorCode
-    String errorMessage
+    Object[] errorMessage
 }

@@ -4,9 +4,9 @@ import groovy.transform.CompileStatic
 import org.springframework.http.HttpStatus
 
 @CompileStatic
-class InvalidAccessException extends ApplicationException {
+class UnauthorizedException extends ApplicationException {
 
-    InvalidAccessException(String message) {
+    UnauthorizedException(String message) {
         super(message,  ErrorCodes.INVALID_CREDENTIALS, [ErrorCodes.INVALID_CREDENTIALS_DESCRIPTION])
     }
 }

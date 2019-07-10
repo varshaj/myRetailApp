@@ -25,7 +25,7 @@ class ThreadpoolConfig {
         executor.setCorePoolSize(corePoolSize)
         executor.setMaxPoolSize(maxPoolSize)
         executor.setQueueCapacity(queueCapacity)
-        executor.setThreadNamePrefix("myRetail-")
+        executor.setThreadNamePrefix("myRetailApp-")
         executor.initialize()
         return executor
     }

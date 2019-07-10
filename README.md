@@ -148,15 +148,13 @@ PUT Endpoint:
 
 ## Improvements
 
-Configuring for cloud configuration
-Expanding/improving tests
-Improve Logging
-Implement event driven approach for each update of product price
-Improve swagger documentation
-Using embedded cassandra for Integration testing
+* Configuring for cloud configuration 
+* Expanding/improving tests 
+* Improve Logging 
+* Implement event driven approach for each update of product price 
+* Improve swagger documentation 
+* Using embedded cassandra for Integration testing 
 
 ## Author
 
 * **Varsha Jaiswal** - *Initial work*(https://github.com/varshaj/myRetailApp)
-
-# myRetailApp

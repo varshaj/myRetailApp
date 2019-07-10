@@ -1,10 +1,9 @@
 package com.myRetail.app.interceptor
 
-import com.myRetail.app.exception.AuthenticationException
+import com.myRetail.app.exception.UnauthorizedException
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.ModelAndView
@@ -34,7 +33,7 @@ class AuthenticateInterceptor implements HandlerInterceptor {
 
         if (!(clientId.equalsIgnoreCase(authKey) && clientSecret.equalsIgnoreCase(authSecret))) {
             log.warn('clientId/clientSecret did not match')
-            throw new AuthenticationException()
+            throw new UnauthorizedException()
         }
         true
     }

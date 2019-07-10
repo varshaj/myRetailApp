@@ -1,8 +1,6 @@
-package com.myRetail.app.repository
+package com.myRetail.app.service
 
 import com.myRetail.app.client.RedSkyClient
-
-import com.myRetail.app.service.RedSkyService
 import spock.lang.Specification
 
 class RedSkyServiceSpec extends Specification {

@@ -3,11 +3,11 @@ package com.myRetail.app.advice
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.github.tomakehurst.wiremock.common.JsonException
-import com.myRetail.app.exception.AuthenticationException
+import com.myRetail.app.exception.UnauthorizedException
 import com.myRetail.app.exception.ErrorCodes
 import com.myRetail.app.exception.ErrorResponse
-import com.myRetail.app.exception.GenericException
-import com.myRetail.app.exception.InvalidPriceUpdateException
+import com.myRetail.app.exception.ApplicationException
+import com.myRetail.app.exception.ValidationException
 import com.myRetail.app.exception.PreconditionFailedException
 import com.myRetail.app.exception.ResourceNotFoundException
 import groovy.util.logging.Slf4j
@@ -33,36 +33,42 @@ class ExceptionHandlerAdvice {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     @Order(Ordered.LOWEST_PRECEDENCE)
-    List<Error> handleGeneralException(Throwable t) {
+    List<ErrorResponse> handleGeneralException(Throwable t) {
         log.error("Unexpected Exception, exceptionClass=${t.class}, exception=${t.message}, cause=${t?.cause?.message}", t)
-        [new Error(errorCode: ErrorCodes.DEFAULT_ERROR_CODE, errorDescription: ErrorCodes.DEFAULT_ERROR_DESCRIPTION)]
+        [new ErrorResponse(errorCode: ErrorCodes.DEFAULT_ERROR_CODE, errorMessage: [ErrorCodes.DEFAULT_ERROR_DESCRIPTION])]
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ErrorResponse handleInvalidPriceUpdateException(InvalidPriceUpdateException invalidPriceUpdateException) {
-        return handleApplicationException(invalidPriceUpdateException)
+    ErrorResponse handleInvalidPriceUpdateException(ValidationException invalidRequestException) {
+        return handleApplicationException(invalidRequestException)
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        log.error("action=handleHttpMessageNotReadableException", exception)
+        return new ErrorResponse(
+                errorCode: "INVALID_REQUEST",
+                errorMessage: ["Message format is invalid"]
+        )
     }
 
     @ResponseBody
     @ExceptionHandler(value = [JsonParseException.class, JsonException.class])
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    List<Error> handleBadJson(Exception e) {
+    List<ErrorResponse> handleBadJson(Exception e) {
         log.error("Invalid json in request, exception=${e.message}")
         invalidInputError
-    }
-
-
-    private static List<Error> getInvalidInputError() {
-        [new Error(errorCode: ErrorCodes.VALIDATION_FAILURE_ERROR_CODE, errorDescription: 'Invalid Input error')]
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    ErrorResponse handleAuthenticationException(AuthenticationException authenticationException) {
-        [new Error(errorCode: authenticationException.message, errorDescription: 'Invalid ClientId/Secret')]
+    ErrorResponse handleAuthenticationException(UnauthorizedException authenticationException) {
+        [new ErrorResponse(errorCode: authenticationException.message, errorMessage: 'Invalid ClientId/Secret')]
     }
 
     @ExceptionHandler
@@ -85,39 +91,21 @@ class ExceptionHandlerAdvice {
     ErrorResponse handleRestClientException(RestClientException restClientException) {
         log.error("action=handleRestClientException", restClientException)
         return new ErrorResponse(
-                errorCode: "INVALID_PRODUCT_ID",
-                errorMessage: "Invalid productId"
+                errorCode: ErrorCodes.INVALID_PRODUCT_ID,
+                errorMessage: [ErrorCodes.INVALID_PRODUCT_ID_DESCRIPTION]
         )
     }
 
-    @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    ErrorResponse handleRuntimeException(RuntimeException exception) {
-        log.error("action=handleRuntimeException", exception)
-        return new ErrorResponse(
-                errorCode: "INTERNAL_EXCEPTION",
-                errorMessage: "Exception occured at runtime"
-        )
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
-        log.error("action=handleHttpMessageNotReadableException", exception)
-        return new ErrorResponse(
-                errorCode: "INVALID_REQUEST",
-                errorMessage: "Message format is invalid"
-        )
-    }
-
-    ErrorResponse handleApplicationException(GenericException exception) {
+    private ErrorResponse handleApplicationException(ApplicationException exception) {
         log.error("action=handle${exception.class.simpleName}", exception)
         return new ErrorResponse(
                 errorCode: exception.errorCode,
-                errorMessage: "Exception occured while processing request with params = ${exception.params.toString()}"
+                errorMessage: exception.errorMessage
         )
+    }
+
+    private static List<ErrorResponse> getInvalidInputError() {
+        [new ErrorResponse(errorCode: ErrorCodes.VALIDATION_FAILURE_ERROR_CODE, errorMessage: ['Invalid Input error'])]
     }
 
 }

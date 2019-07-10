@@ -1,12 +1,12 @@
 package com.myRetail.app.exception
 
 import groovy.transform.CompileStatic
+import org.springframework.http.HttpStatus
 
 @CompileStatic
-class PreconditionFailedException extends GenericException {
+class PreconditionFailedException extends ApplicationException {
 
-    PreconditionFailedException(Long productId) {
-        errorCode = "PRODUCT_ID_MISMATCH"
-        params = [productId] as String[]
+    PreconditionFailedException(String message) {
+        super(message,  ErrorCodes.PRODUCT_ID_MISMATCH, [ErrorCodes.PRODUCT_ID_MISMATCH_DESCRIPTION])
     }
 }
