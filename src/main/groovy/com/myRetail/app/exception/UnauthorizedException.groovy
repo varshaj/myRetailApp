@@ -1,7 +1,6 @@
 package com.myRetail.app.exception
 
 import groovy.transform.CompileStatic
-import org.springframework.http.HttpStatus
 
 @CompileStatic
 class UnauthorizedException extends ApplicationException {
